@@ -1,0 +1,34 @@
+{
+  "GlobalConfiguration": {
+  },
+  "Routes": [
+    {
+      "UpstreamPathTemplate": "/gateway/products/{pageSize}/{pageIndex}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      },
+      "DownstreamPathTemplate": "/api/v1/catalog/products/{pageSize}/{pageIndex}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 44315
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/gateway/auth",
+      "UpstreamHttpMethod": [ "Post" ],
+      "DownstreamPathTemplate": "/api/v1/auth/login",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 44324
+        }
+      ]
+    }
+  ]
+}
