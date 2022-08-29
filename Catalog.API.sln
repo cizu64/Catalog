@@ -5,9 +5,11 @@ VisualStudioVersion = 17.2.32516.85
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Catalog.API", "Catalog.API\Catalog.API.csproj", "{B2D12725-57E5-4197-AA74-2C6EB8CC816B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catalog.Auth", "Catalog.Auth\Catalog.Auth.csproj", "{363854AC-F122-4A3C-AD8A-03540701213E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Catalog.Auth", "Catalog.Auth\Catalog.Auth.csproj", "{363854AC-F122-4A3C-AD8A-03540701213E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Catalog.Gateway", "Catalog.Gateway\Catalog.Gateway.csproj", "{C7E62134-2F62-4C91-A44F-C2CFA5C52D22}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catalog.Auth.IntegrationEventService", "Catalog.Auth.IntegrationEventService\Catalog.Auth.IntegrationEventService.csproj", "{7DEB5751-AB48-4DFE-A095-48012C82CB17}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{C7E62134-2F62-4C91-A44F-C2CFA5C52D22}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C7E62134-2F62-4C91-A44F-C2CFA5C52D22}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C7E62134-2F62-4C91-A44F-C2CFA5C52D22}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7DEB5751-AB48-4DFE-A095-48012C82CB17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7DEB5751-AB48-4DFE-A095-48012C82CB17}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7DEB5751-AB48-4DFE-A095-48012C82CB17}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7DEB5751-AB48-4DFE-A095-48012C82CB17}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

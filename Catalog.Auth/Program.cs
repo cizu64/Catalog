@@ -11,6 +11,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+
 var Secret = builder.Configuration["jwt:secret"];
 var key = Encoding.ASCII.GetBytes(Secret);
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(x =>
@@ -25,6 +28,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
         ValidAudience = builder.Configuration["jwt:audience"]
     };
 });
+builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<AuthContext>(options =>
 {
@@ -45,7 +49,11 @@ builder.Services.AddScoped<IAuth, Auth>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 app.UseHttpsRedirection();
 
 app.UseAuthentication();

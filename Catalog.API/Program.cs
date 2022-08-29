@@ -3,10 +3,14 @@ using Catalog.API.Infrastructure.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json.Linq;
+using RabbitMQ.Client;
+using RabbitMQ.Client.Events;
 using System.Reflection;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+ListenForIntegrationEvents();
 
 // Add services to the container.
 
@@ -61,3 +65,36 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+
+void ListenForIntegrationEvents()
+{
+    var contextOptions = new DbContextOptionsBuilder<CatalogContext>()
+                 .UseSqlServer(builder.Configuration["ConnectionString"])
+                 .Options;
+
+    var connectionFactory = new ConnectionFactory
+    {
+        Uri = new Uri("amqp://guest:guest@localhost:5672")
+    };
+    using var connection = connectionFactory.CreateConnection();
+    using var channel = connection.CreateModel();
+
+    channel.QueueDeclare("user.add", true, false, false, null);
+
+    var consumer = new EventingBasicConsumer(channel);
+    consumer.Received += (sender, e) =>
+    {
+        channel.BasicAck(e.DeliveryTag, false);
+        var context = new CatalogContext(contextOptions);
+        var body = e.Body.ToArray();
+        var message = Encoding.UTF8.GetString(body);
+        var data = JObject.Parse(message);
+        context.Shop.Add(new Catalog.API.Model.Shop
+        {
+            UserId = data["UserId"].Value<int>()
+        });
+        context.SaveChanges();
+    };
+    channel.BasicConsume("user.add", false, consumer);
+}

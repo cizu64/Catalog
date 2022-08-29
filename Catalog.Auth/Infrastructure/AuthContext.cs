@@ -1,5 +1,5 @@
-﻿using Catalog.Auth.Model;
-using EntityConfigurations;
+﻿using Catalog.Auth.Infrastructure.EntityConfigurations;
+using Catalog.Auth.Model;
 using Microsoft.EntityFrameworkCore;
 
 namespace Catalog.Auth.Infrastructure
@@ -10,9 +10,12 @@ namespace Catalog.Auth.Infrastructure
         {
         }
         public DbSet<User> User { get; set; }
+        public DbSet<IntegrationEvent> IntegrationEvent { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new UserEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new IntegrationEventEntityTypeConfiguration());
         }
     }
 }
