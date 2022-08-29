@@ -65,6 +65,14 @@ namespace Catalog.API.Controllers
             await _uow.SaveChangesAsync();
             return Ok();
         }
-     
+
+        [HttpGet]
+        [Route("[action]")]
+        public async Task<IActionResult> Shop()
+        {
+            var shops = await _uow.Repository<Shop>().GetAll().ToListAsync();
+            return Ok(shops);
+        }
+
     }
 }

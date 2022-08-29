@@ -4,7 +4,10 @@ using Catalog.Auth.Model;
 using Catalog.Auth.Services;
 using Catalog.Auth.ViewModel;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using RabbitMQ.Client;
 using System.Security.Claims;
+using System.Text;
 
 namespace Catalog.Auth.Controllers
 {
@@ -48,16 +51,28 @@ namespace Catalog.Auth.Controllers
         [Route("[action]")]
         public async Task<IActionResult> SignUp([FromBody] SignUpModel model)
         {
-
-            await uow.Repository<User>().Add(new User
+            var user = new User
             {
                 Email = model.Email,
                 Fullname = model.Fullname,
-                Password = model.Password.Hash(),
-
-            });
+                Password = model.Password.Hash()
+            };
+            await uow.Repository<User>().Add(user);
             await uow.SaveChangesAsync();
 
+            //var Id = uow.Repository<User>().Entry(user).GetDatabaseValues().GetValue<int>("Id");
+
+            //instead of publishing directly, use outbox pattern to store the message to the IntegrationEvent table in order to avoid data loss
+            var integrationEventData = JsonConvert.SerializeObject(new
+            {
+                UserId = user.Id
+            });
+            await uow.Repository<IntegrationEvent>().Add(new()
+            {
+                Queue = "user.add",
+                Data = integrationEventData
+            });
+            await uow.SaveChangesAsync();
             return Ok(new
             {
                 Succeeded = true,
