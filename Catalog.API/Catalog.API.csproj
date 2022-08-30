@@ -20,8 +20,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DomainEvents\" />
-    <Folder Include="IntegrationEvents\" />
     <Folder Include="Factories\" />
     <Folder Include="Extensions\" />
     <Folder Include="Services\" />

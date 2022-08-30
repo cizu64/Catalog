@@ -77,8 +77,8 @@ void ListenForIntegrationEvents()
     {
         Uri = new Uri("amqp://guest:guest@localhost:5672")
     };
-    using var connection = connectionFactory.CreateConnection();
-    using var channel = connection.CreateModel();
+    var connection = connectionFactory.CreateConnection();
+    var channel = connection.CreateModel();
 
     channel.QueueDeclare("user.add", true, false, false, null);
 
@@ -90,10 +90,14 @@ void ListenForIntegrationEvents()
         var body = e.Body.ToArray();
         var message = Encoding.UTF8.GetString(body);
         var data = JObject.Parse(message);
-        context.Shop.Add(new Catalog.API.Model.Shop
+        int userId = data["UserId"].Value<int>();
+        if (!context.Shop.Any(s => s.UserId == userId)) //just to make sure we don't have duplicates
         {
-            UserId = data["UserId"].Value<int>()
-        });
+            context.Shop.Add(new Catalog.API.Model.Shop
+            {
+                UserId = data["UserId"].Value<int>()
+            });
+        }
         context.SaveChanges();
     };
     channel.BasicConsume("user.add", false, consumer);

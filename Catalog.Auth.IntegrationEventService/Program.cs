@@ -6,8 +6,11 @@ using Topshelf;
 
 public class Program
 {
-    IntegrationEventContext context = new IntegrationEventContext();
-
+    readonly IntegrationEventContext context;
+    public Program()
+    {
+        context = new();        
+    }
     //public integration event from the IntegrationEvent model
     public void Start()
     {
