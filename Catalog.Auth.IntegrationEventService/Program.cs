@@ -7,36 +7,40 @@ using Topshelf;
 public class Program
 {
     readonly IntegrationEventContext context;
+    readonly PeriodicTimer timer;
     public Program()
     {
-        context = new();        
+        context = new();
+        timer = new(TimeSpan.FromSeconds(10));
     }
     //public integration event from the IntegrationEvent model
-    public void Start()
+    public async Task Start()
     {
-        var connectionFactory = new ConnectionFactory
+        while (await timer.WaitForNextTickAsync())
         {
-            Uri = new Uri("amqp://guest:guest@localhost:5672")
-        };
-        using var connection = connectionFactory.CreateConnection();
-        using var channel = connection.CreateModel();
-        var evt = context.IntegrationEvent.Where(e => !e.IsPublished).OrderBy(e => e.Id);
-        foreach (var e in evt)
-        {
-            //publish message to event bus (rabbitmq)
+            var connectionFactory = new ConnectionFactory
+            {
+                Uri = new Uri("amqp://guest:guest@localhost:5672")
+            };
+            using var connection = connectionFactory.CreateConnection();
+            using var channel = connection.CreateModel();
+            var evt = context.IntegrationEvent.Where(e => !e.IsPublished).OrderBy(e => e.Id);
+            foreach (var e in evt)
+            {
+                //publish message to event bus (rabbitmq)
 
-            channel.QueueDeclare(e.Queue, true, false, false, null);
-            var body = Encoding.UTF8.GetBytes(e.Data);
-            channel.BasicPublish("", e.Queue, null, body);
+                channel.QueueDeclare(e.Queue, true, false, false, null);
+                var body = Encoding.UTF8.GetBytes(e.Data);
+                channel.BasicPublish("", e.Queue, null, body);
 
-            e.IsPublished = true;
+                e.IsPublished = true;
+            }
+            context.SaveChanges();
         }
-        context.SaveChanges();
     }
-
     public void Stop()
     {
-
+        timer.Dispose();
     }
 
     public static void Main()
@@ -46,7 +50,7 @@ public class Program
              x.Service<Program>(s =>
              {
                  s.ConstructUsing(name => new Program());
-                 s.WhenStarted(evt => evt.Start());
+                 s.WhenStarted(async evt => await evt.Start());
                  s.WhenStopped(evt => evt.Stop());
              });
              x.RunAsLocalSystem();
